@@ -1,0 +1,1 @@
+CREATE TABLE products(id varchar(100),  name varchar(50), description varchar(250), price money, imageURL image, discountRate int);
