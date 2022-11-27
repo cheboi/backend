@@ -17,6 +17,20 @@ const getProducts = async (req, res) => {
   }
 };
 
+const getProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = await (await exec("getProductById", { id })).recordset;
+    if (product.length) {
+      res.status(200).json(product);
+    } else {
+      res.status(404).json({ message: `product with id ${id} does not exist` });
+    }
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
+};
+
 const insertProduct = async (req, res) => {
   try {
     const id = v4();
@@ -59,10 +73,22 @@ const updateProduct = async (req, res) => {
         .execute("insertProduct");
       res.status(200).json({ message: "product successfully  Updated!!" });
     } else {
-      res.status(404).json({ message: `thi product ${id} is not found` });
+      res.status(404).json({ message: `the product ${id} is not found` });
     }
   } catch (error) {
     res.status(404).json({ error: error.message });
+  }
+};
+
+const deleteProduct = async (req, res) => {
+  const { id } = req.params;
+  const product = await (await exec("getProduct", { id })).recordset;
+
+  if (product.length) {
+    query(`DELETE FROM Product WHERE id ='${id}'`);
+    res.status(200).json({ message: "Product Deleted!!" });
+  } else {
+    res.status(404).json({ message: `Product with id ${id} does not exist` });
   }
 };
 
@@ -70,4 +96,6 @@ module.exports = {
   getProducts,
   insertProduct,
   updateProduct,
+  getProduct,
+  deleteProduct,
 };

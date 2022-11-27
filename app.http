@@ -1,0 +1,31 @@
+POST http://localhost:3000/user/signup
+Content-Type: application/json
+
+{
+    "email":"marktoo@gmail.com",
+    "first_name": "Mark",
+    "last_name": "Too",
+    "username":"cheboi",
+    "password":"123"
+}
+###
+
+POST http://localhost:8080/user/login
+Content-Type: application/json
+
+{
+    "email":"marktoo@gmail.com",
+    "password":"123"
+}
+
+###
+GET http://localhost:8080/products
+
+###
+POST  http://localhost:8080/products
+
+    "name": "book",
+    "description": "jfdnf dndfjn ndjvndfj",
+    "price":"800",
+    "imageUrl:"https://www.kasandbox.org/programming-images/avatars/leaf-blue.png"
+    "discountRate":"20"
