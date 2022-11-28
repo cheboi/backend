@@ -29,3 +29,10 @@ POST  http://localhost:8080/products
     "price":"800",
     "imageUrl:"https://www.kasandbox.org/programming-images/avatars/leaf-blue.png"
     "discountRate":"20"
+
+
+###
+GET http://localhost:8080/cart/cart
+
+###
+PUT  http://localhost:8080/cart/localhost:8080/cart
