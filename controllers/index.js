@@ -1,6 +1,7 @@
 const mssql = require("mssql");
 const { v4 } = require("uuid");
 const sqlConfig = require("../Config/index");
+const { exec } = require("../DatabaseHelpers/dbhelper");
 
 const getProducts = async (req, res) => {
   try {
@@ -17,10 +18,24 @@ const getProducts = async (req, res) => {
   }
 };
 
+const getProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = await (await exec("getProductById", { id })).recordset;
+    if (product.length) {
+      res.status(200).json(product);
+    } else {
+      res.status(404).json({ message: `product with id ${id} does not exist` });
+    }
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
+};
+
 const insertProduct = async (req, res) => {
   try {
     const id = v4();
-    const { name, description, price, imageURL, discountRate } = req.body;
+    const { name, description, price, imageUrl, discountRate } = req.body;
     const pool = await mssql.connect(sqlConfig);
     await pool
       .request()
@@ -29,7 +44,7 @@ const insertProduct = async (req, res) => {
       .input("price", mssql.VarChar, price)
       .input("discountRate", mssql.VarChar, discountRate)
       .input("description", mssql.VarChar, description)
-      .input("imageUrl", mssql.Image, imageURL)
+      .input("imageUrl", mssql.VarChar, imageUrl)
       .execute("insertProduct");
 
     res.status(201).json({ message: "product added" });
@@ -59,10 +74,22 @@ const updateProduct = async (req, res) => {
         .execute("insertProduct");
       res.status(200).json({ message: "product successfully  Updated!!" });
     } else {
-      res.status(404).json({ message: `thi product ${id} is not found` });
+      res.status(404).json({ message: `the product ${id} is not found` });
     }
   } catch (error) {
     res.status(404).json({ error: error.message });
+  }
+};
+
+const deleteProduct = async (req, res) => {
+  const { id } = req.params;
+  const product = await (await exec("getProductById", { id })).recordset;
+
+  if (product.length) {
+    exec("deleteCartItem");
+    res.status(200).json({ message: "Product Deleted!!" });
+  } else {
+    res.status(404).json({ message: `Product with id ${id} does not exist` });
   }
 };
 
@@ -70,4 +97,6 @@ module.exports = {
   getProducts,
   insertProduct,
   updateProduct,
+  getProduct,
+  deleteProduct,
 };
